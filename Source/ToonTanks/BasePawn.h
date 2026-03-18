@@ -16,6 +16,13 @@ public:
 	// Sets default values for this pawn's properties
 	ABasePawn();
 
+	void HandleDestruction();
+
+protected:
+
+	void RotateTurret(FVector LookAtTarget);
+	void Fire();
+
 private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components", meta = (AllowPrivateAccess = "true")) //±©Â¶¸øue¿´
 	class UCapsuleComponent* CapsuleComp;//½ºÄÒÖ¸Õë
@@ -32,4 +39,12 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Super Duper Variables", meta = (AllowPrivateAccess = "true"))
 		int32 EditAnywhereInt = 22;
 
+		UPROPERTY(EditDefaultsOnly, Category = "Combat")
+	TSubclassOf<class AProjectile> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	class UParticleSystem* DeathParticles;
+
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	class USoundBase* DeathSound;
 };

@@ -6,7 +6,6 @@
 #include "Camera/CameraComponent.h"
 #include "Components/InputComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "DrawDebugHelpers.h"
 
 ATank::ATank()
 {
@@ -23,29 +22,31 @@ void ATank::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 	PlayerInputComponent->BindAxis(TEXT("MoveForward"), this, &ATank::Move);
 	PlayerInputComponent->BindAxis(TEXT("Turn"), this, &ATank::Turn);
+
+	PlayerInputComponent->BindAction(TEXT("Fire"), IE_Pressed, this, &ATank::Fire);
 }
 
 void ATank::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (PlayerControllerRef) 
+	if (TankPlayerController) 
 	{
 		FHitResult HitResult;
-		PlayerControllerRef->GetHitResultUnderCursor(
+		TankPlayerController->GetHitResultUnderCursor(
 			ECollisionChannel::ECC_Visibility,
 			false,
 			HitResult);
+		RotateTurret(HitResult.ImpactPoint);
 
-		DrawDebugSphere(
-			GetWorld(),
-			HitResult.ImpactPoint,
-			25.f,
-			12,
-			FColor::Red,
-			false,
-			-1.f);
 	}
+}
+
+void ATank::HandleDestruction()
+{
+	Super::HandleDestruction();
+	SetActorHiddenInGame(true);
+	SetActorTickEnabled(false);
 }
 
 // Called when the game starts or when spawned
@@ -53,7 +54,7 @@ void ATank::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerControllerRef = Cast<APlayerController>(GetController());
+	TankPlayerController = Cast<APlayerController>(GetController());
 
 }
 
